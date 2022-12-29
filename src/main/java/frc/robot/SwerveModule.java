@@ -15,71 +15,73 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
-    private final CANSparkMax driveMotor;
-    private final CANSparkMax steerMotor;
+    private final CANSparkMax mDriveMotor;
+    private final CANSparkMax mSteerMotor;
     
-    private final RelativeEncoder driveEncoder;
-    private final RelativeEncoder steerEncoder;
+    private final RelativeEncoder mDriveEncoder;
+    private final RelativeEncoder mSteerEncoder;
 
-    private final PIDController steerPidController;
+    private final PIDController mSteerPidController;
 
-    private final CANCoder absoluteEncoder;
-    private final boolean absoluteEncoderReversed;
-    private final double absoluteEncoderOffsetRad;
+    private final CANCoder mAbsoluteEncoder;
+    private final boolean mAbsoluteEncoderReversed;
+    private final double mAbsoluteEncoderOffsetRad;
 
     public SwerveModule(int driveMotorId, int steerMotorId, boolean driveMotorReversed, boolean steerMotorReversed,
     int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
     //absolute encoders
-    this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
-    this.absoluteEncoderReversed = absoluteEncoderReversed;
-    absoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
-    absoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
+    this.mAbsoluteEncoderOffsetRad = absoluteEncoderOffset;
+    this.mAbsoluteEncoderReversed = absoluteEncoderReversed;
+    mAbsoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
+    mAbsoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
     //motors
-    driveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
-    steerMotor = new CANSparkMax(steerMotorId, MotorType.kBrushless);
+    mDriveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
+    mSteerMotor = new CANSparkMax(steerMotorId, MotorType.kBrushless);
     //inverting motors
-    driveMotor.setInverted(driveMotorReversed);
-    steerMotor.setInverted(steerMotorReversed);
+    mDriveMotor.setInverted(driveMotorReversed);
+    mSteerMotor.setInverted(steerMotorReversed);
     //motor encoders
-    driveEncoder = driveMotor.getEncoder();
-    steerEncoder = steerMotor.getEncoder();
+    mDriveEncoder = mDriveMotor.getEncoder();
+    mSteerEncoder = mSteerMotor.getEncoder();
 
     //so that we can work with meters and radians instead of rotations
-    driveEncoder.getPosition();
-    driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
-    driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
-    steerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
-    steerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
+    mDriveEncoder.getPosition();
+    mDriveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
+    mDriveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
+    mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
+    mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
     
-    steerPidController = new PIDController(ModuleConstants.kPSteer, ModuleConstants.kISteer, ModuleConstants.kDSteer);
-    steerPidController.enableContinuousInput(-Math.PI, Math.PI);
+    //TODO: hardware PID?
+    
+    mSteerPidController = new PIDController(ModuleConstants.kPSteer, ModuleConstants.kISteer, ModuleConstants.kDSteer);
+    mSteerPidController.enableContinuousInput(-Math.PI, Math.PI);
 
     
     }
 
     public double getDrivePosition() {
-        return driveEncoder.getPosition();
+        return mDriveEncoder.getPosition();
     }
 
     public double getSteerPosition() {
-        return steerEncoder.getPosition();
+        return mSteerEncoder.getPosition();
     }
 
     public double getDriveVelocity() {
-        return driveEncoder.getVelocity();
+        return mDriveEncoder.getVelocity();
     }
     
     public double getSteerVelocity() {
-        return steerEncoder.getVelocity();
+        return mSteerEncoder.getVelocity();
     }
 
     public double getAbsoluteEncoder() {
-        return absoluteEncoder.getPosition();
+        return mAbsoluteEncoder.getPosition();
     }
 
     public void resetEncoders() {
-        driveEncoder.setPosition(0);
-        steerEncoder.setPosition(getAbsoluteEncoder());
+        mDriveEncoder.setPosition(0);
+        mSteerEncoder.setPosition(getAbsoluteEncoder());
     }
 
     public SwerveModuleState getState() {
@@ -95,14 +97,14 @@ public class SwerveModule {
         //by taking in the desired state and the current angle the wheels are at, change desired state so that the difference between current and desired angle is minimized
         state = SwerveModuleState.optimize(state, getState().angle);
         //set motors to desired state
-        driveMotor.set(state.speedMetersPerSecond / DriveConstants.MAX_SPEED_METERS_PER_SECOND);
-        steerMotor.set(steerPidController.calculate(getSteerPosition(), state.angle.getRadians()));
-        SmartDashboard.putString("Swerve[" + absoluteEncoder.getDeviceID()+ "] state", state.toString());
+        mDriveMotor.set(state.speedMetersPerSecond / DriveConstants.kMaxSpeedMps);
+        mSteerMotor.set(mSteerPidController.calculate(getSteerPosition(), state.angle.getRadians()));
+        SmartDashboard.putString("Swerve[" + mAbsoluteEncoder.getDeviceID()+ "] state", state.toString());
 
     }
 
     public void stop() {
-        driveMotor.set(0);
-        steerMotor.set(0);
+        mDriveMotor.set(0);
+        mSteerMotor.set(0);
     }
 }
