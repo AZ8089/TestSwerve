@@ -33,7 +33,7 @@ public class SwerveModule {
     this.absoluteEncoderOffsetRad = absoluteEncoderOffset;
     this.absoluteEncoderReversed = absoluteEncoderReversed;
     absoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
-    absoluteEncoder.configFeedbackCoefficient(ModuleConstants.ABSOLUTE_ENCODER_CPM_TO_RAD, "rad", SensorTimeBase.PerSecond); //convert to radians per second
+    absoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
     //motors
     driveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
     steerMotor = new CANSparkMax(steerMotorId, MotorType.kBrushless);
@@ -46,12 +46,12 @@ public class SwerveModule {
 
     //so that we can work with meters and radians instead of rotations
     driveEncoder.getPosition();
-    driveEncoder.setPositionConversionFactor(ModuleConstants.DRIVE_ENCODER_ROT_TO_METERS);
-    driveEncoder.setVelocityConversionFactor(ModuleConstants.DRIVE_ENCODER_RPM_TO_METERS_PER_SEC);
-    steerEncoder.setVelocityConversionFactor(ModuleConstants.STEER_ENCODER_ROT_TO_RAD);
-    steerEncoder.setVelocityConversionFactor(ModuleConstants.STEER_ENCODER_RPM_TO_RAD_PER_SEC);
+    driveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
+    driveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
+    steerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
+    steerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
     
-    steerPidController = new PIDController(ModuleConstants.P_STEER, 0, 0);
+    steerPidController = new PIDController(ModuleConstants.kPSteer, ModuleConstants.kISteer, ModuleConstants.kDSteer);
     steerPidController.enableContinuousInput(-Math.PI, Math.PI);
 
     
