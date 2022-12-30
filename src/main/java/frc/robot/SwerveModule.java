@@ -5,7 +5,6 @@ import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
-import frc.robot.Constants.ModuleConstants;
 import frc.robot.Constants.DriveConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.RobotController;
@@ -15,6 +14,22 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
+    public static final class ModuleConstants {
+        public static final double kWheelDiameterMeters = 0.1016; //in meters //4 inches
+        public static final double kDriveMotorGearRatio = 1/5.84628; //TODO: measure drive motor gear ratio
+        public static final double kSteerMotorGearRatio = 1/18.0; //TODO: measure steer motor gear ratio
+        public static final double kDriveEncoderRotToMeters = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
+        public static final double kSteerEncoderRot2Rad = kSteerMotorGearRatio *kDriveEncoderRotToMeters;
+        public static final double kDriveEncoderRpm2Mps = kDriveEncoderRotToMeters / 60.0; //rpm = rotations per minute //mps = meters per second
+        public static final double kSteerEncoderRPM2RadPerSec = kSteerEncoderRot2Rad / 60.0;
+        public static final double kCANCoderCounts = 4096.0; // CANCoders have a resolution of 4096 counts per revolution
+        public static final double kAbsoluteEncoderCountsPerMin2Rad = 2.0*Math.PI/kCANCoderCounts; 
+
+        //PID values
+        public static final double kPSteer = 0.5; //TODO: Determine actual kPSteer Value
+        public static final double kISteer = 0.0; //TODO: Determine actual kISteer Value
+        public static final double kDSteer = 0.0; //TODO: Determine actual kDSteer Value
+    }
     private final CANSparkMax mDriveMotor;
     private final CANSparkMax mSteerMotor;
     
@@ -30,8 +45,8 @@ public class SwerveModule {
     public SwerveModule(int driveMotorId, int steerMotorId, boolean driveMotorReversed, boolean steerMotorReversed,
     int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
     //absolute encoders
-    this.mAbsoluteEncoderOffsetRad = absoluteEncoderOffset;
-    this.mAbsoluteEncoderReversed = absoluteEncoderReversed;
+    mAbsoluteEncoderOffsetRad = absoluteEncoderOffset;
+    mAbsoluteEncoderReversed = absoluteEncoderReversed;
     mAbsoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
     mAbsoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
     //motors
@@ -76,7 +91,7 @@ public class SwerveModule {
     }
 
     public double getAbsoluteEncoder() {
-        return mAbsoluteEncoder.getPosition();
+        return mAbsoluteEncoder.getPosition()-mAbsoluteEncoderOffsetRad;
     }
 
     public void resetEncoders() {
