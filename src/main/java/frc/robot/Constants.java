@@ -12,4 +12,28 @@ package frc.robot;
  * <p>It is advised to statically import this class (or one of its inner classes) wherever the
  * constants are needed, to reduce verbosity.
  */
-public final class Constants {}
+public final class Constants {
+
+    public static final class DriveConstants {
+
+
+        // Spark Max IDs
+        public static final int kFrontLeftDriveMotorPort = 1; //TODO: Decide what this ID needs to be
+        public static final int kFrontRightDriveMotorPort = 2; //TODO: Decide what this  ID needs to be
+        public static final int kBackLeftDriveMotorPort = 3; //TODO: Decide what this  ID needs to be
+        public static final int kBackRightDriveMotorPort = 4; //TODO: Decide what this  ID needs to be
+    
+        public static final int kFrontLeftSteerMotorPort = 5; //TODO: Decide what this  ID needs to be
+        public static final int kFrontRightSteerMotorPort = 6; //TODO: Decide what this ID needs to be
+        public static final int kBackLeftSteerMotorPort = 7; //TODO: Decide what this  ID needs to be
+        public static final int kBackRightSteerMotorPort = 8; //TODO: Decide what this ID needs to be
+    
+        // Measurements //TODO: confirm measurements
+        public static final double kWheelBaseMeters = 0.52613; 
+        public static final double kTrackWidthMeters = 0.52695;
+        public static final double kMaxSpeedMps = 3.6576;
+            
+                
+    }
+}
+
