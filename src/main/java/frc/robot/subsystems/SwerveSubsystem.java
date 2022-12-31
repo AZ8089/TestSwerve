@@ -12,7 +12,7 @@ import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
 public class SwerveSubsystem extends SubsystemBase{
     //declare and instantiate all swerve modules
-    private final SwerveModule frontLeft = new SwerveModule(
+    private final SwerveModule mFrontLeft = new SwerveModule(
         DriveConstants.kFrontLeftDriveMotorPort,
         DriveConstants.kFrontLeftSteerMotorPort,
         DriveConstants.kFrontLeftDriveEncoderReversed,
@@ -21,7 +21,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFrontLeftAbsoluteEncoderOffsetRad,
         DriveConstants.kFrontLeftAbsoluteEncoderReversed);
 
-    private final SwerveModule frontRight = new SwerveModule(
+    private final SwerveModule mFrontRight = new SwerveModule(
         DriveConstants.kFrontRightDriveMotorPort,
         DriveConstants.kFrontRightSteerMotorPort,
         DriveConstants.kFrontRightDriveEncoderReversed,
@@ -30,7 +30,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kFrontRightAbsoluteEncoderOffsetRad,
         DriveConstants.kFrontRightAbsoluteEncoderReversed);
 
-    private final SwerveModule backLeft = new SwerveModule(
+    private final SwerveModule mBackLeft = new SwerveModule(
         DriveConstants.kBackLeftDriveMotorPort,
         DriveConstants.kBackLeftSteerMotorPort,
         DriveConstants.kBackLeftDriveEncoderReversed,
@@ -39,7 +39,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBackLeftAbsoluteEncoderOffsetRad,
         DriveConstants.kBackLeftAbsoluteEncoderReversed);
 
-    private final SwerveModule backRight = new SwerveModule(
+    private final SwerveModule mBackRight = new SwerveModule(
         DriveConstants.kBackRightDriveMotorPort,
         DriveConstants.kBackRightSteerMotorPort,
         DriveConstants.kBackRightDriveEncoderReversed,
@@ -86,18 +86,18 @@ public class SwerveSubsystem extends SubsystemBase{
     }
 
     public void stopModules() {
-        frontLeft.stop();
-        frontRight.stop();
-        backLeft.stop();
-        backRight.stop();
+        mFrontLeft.stop();
+        mFrontRight.stop();
+        mBackLeft.stop();
+        mBackRight.stop();
     }
 
     public void setModuleStates(SwerveModuleState[] desiredStates) {
         SwerveDriveKinematics.desaturateWheelSpeeds(desiredStates, DriveConstants.kMaxSpeedMps);
-        frontLeft.setDesiredState(desiredStates[0]);
-        frontRight.setDesiredState(desiredStates[1]);
-        backLeft.setDesiredState(desiredStates[2]);
-        backRight.setDesiredState(desiredStates[3]);
+        mFrontLeft.setDesiredState(desiredStates[0]);
+        mFrontRight.setDesiredState(desiredStates[1]);
+        mBackLeft.setDesiredState(desiredStates[2]);
+        mBackRight.setDesiredState(desiredStates[3]);
     }
 
 }
