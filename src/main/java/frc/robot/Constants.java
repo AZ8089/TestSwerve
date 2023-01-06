@@ -17,6 +17,9 @@ public final class Constants {
     public static final class DriveConstants {
         //Pigeon ID //TODO: Determine Pigeon port
         public static final int kPigeonPort = 0;
+
+        
+        
         // Spark Max IDs 
         public static final int kFrontLeftDriveMotorPort = 1; //TODO: Decide what this ID needs to be
         public static final int kFrontRightDriveMotorPort = 2; //TODO: Decide what this  ID needs to be
@@ -28,10 +31,10 @@ public final class Constants {
         public static final int kBackLeftSteerMotorPort = 7; //TODO: Decide what this  ID needs to be
         public static final int kBackRightSteerMotorPort = 8; //TODO: Decide what this ID needs to be
         
-        public static final int kFrontLeftAbsoluteEncoderPort = 0; //TODO: Decide what this ID needs to be
-        public static final int kFrontRightAbsoluteEncoderPort = 0; //TODO: Decide what this ID needs to be
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 0; //TODO: Decide what this ID needs to be
-        public static final int kBackRightAbsoluteEncoderPort = 0; //TODO: Decide what this ID needs to be
+        public static final int kFrontLeftAbsoluteEncoderPort = 11; //TODO: Decide what this ID needs to be
+        public static final int kFrontRightAbsoluteEncoderPort = 12; //TODO: Decide what this ID needs to be
+        public static final int kBackLeftDriveAbsoluteEncoderPort = 9; //TODO: Decide what this ID needs to be
+        public static final int kBackRightAbsoluteEncoderPort = 10; //TODO: Decide what this ID needs to be
         
         
         //whether or not encoders are reversed //TODO: Determine which are reversed
@@ -54,18 +57,18 @@ public final class Constants {
         
 
         //absolute encoder offsets //TODO: Determine Offsets
-        public static final double kFrontLeftAbsoluteEncoderOffsetRad = 0.0;
-        public static final double kFrontRightAbsoluteEncoderOffsetRad = 0.0;
-        public static final double kBackLeftAbsoluteEncoderOffsetRad = 0.0;
-        public static final double kBackRightAbsoluteEncoderOffsetRad = 0.0;
+        public static final double kFrontLeftAbsoluteEncoderOffsetRad = 291.182;
+        public static final double kFrontRightAbsoluteEncoderOffsetRad = 203.730;
+        public static final double kBackLeftAbsoluteEncoderOffsetRad = 278.350;
+        public static final double kBackRightAbsoluteEncoderOffsetRad = 310.342;
         
         // Measurements //TODO: confirm measurements
         public static final double kWheelBaseMeters = 0.52613; 
         public static final double kTrackWidthMeters = 0.52695;
         public static final double kMaxSpeedMps = 3.6576;
         
-		
-        
+		public static final double kSteerEncoderGearRatio = (150/7)/(2*Math.PI); //(150/7)/2*pi: one revolution of steering motor equals this many radians on motor
+        public static final double kDriveEncoderGearRatio = (8.14)/(2*Math.PI); //8.14/2*pi: gear ratio*revolution to radians
        
         
  

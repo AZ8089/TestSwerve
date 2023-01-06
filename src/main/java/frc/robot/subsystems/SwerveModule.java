@@ -3,6 +3,7 @@ package frc.robot.subsystems;
 import com.ctre.phoenix.sensors.CANCoder;
 import com.ctre.phoenix.sensors.SensorTimeBase;
 import com.revrobotics.RelativeEncoder;
+import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Constants.DriveConstants;
@@ -29,6 +30,7 @@ public class SwerveModule {
         public static final double kPSteer = 0.5; //TODO: Determine actual kPSteer Value
         public static final double kISteer = 0.0; //TODO: Determine actual kISteer Value
         public static final double kDSteer = 0.0; //TODO: Determine actual kDSteer Value
+        public static final double kFFSteer = 0.0; //TODO: Determine actual kFFSteer Value
     }
     private final CANSparkMax mDriveMotor;
     private final CANSparkMax mSteerMotor;
@@ -36,41 +38,47 @@ public class SwerveModule {
     private final RelativeEncoder mDriveEncoder;
     private final RelativeEncoder mSteerEncoder;
 
-    private final PIDController mSteerPidController;
+    //private final PIDController mSteerPidController;
 
     private final CANCoder mAbsoluteEncoder;
     private final boolean mAbsoluteEncoderReversed;
     private final double mAbsoluteEncoderOffsetRad;
 
     public SwerveModule(int driveMotorId, int steerMotorId, boolean driveMotorReversed, boolean steerMotorReversed,
-    int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
-    //absolute encoders
-    mAbsoluteEncoderOffsetRad = absoluteEncoderOffset;
-    mAbsoluteEncoderReversed = absoluteEncoderReversed;
-    mAbsoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
-    mAbsoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
-    //motors
-    mDriveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
-    mSteerMotor = new CANSparkMax(steerMotorId, MotorType.kBrushless);
-    //inverting motors
-    mDriveMotor.setInverted(driveMotorReversed);
-    mSteerMotor.setInverted(steerMotorReversed);
-    //motor encoders
-    mDriveEncoder = mDriveMotor.getEncoder();
-    mSteerEncoder = mSteerMotor.getEncoder();
+        int absoluteEncoderId, double absoluteEncoderOffset, boolean absoluteEncoderReversed) {
+        //absolute encoders
+        mAbsoluteEncoderOffsetRad = absoluteEncoderOffset;
+        mAbsoluteEncoderReversed = absoluteEncoderReversed;
+        mAbsoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
+        mAbsoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
+        //motors
+        mDriveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
+        mSteerMotor = new CANSparkMax(steerMotorId, MotorType.kBrushless);
+        //inverting motors
+        mDriveMotor.setInverted(driveMotorReversed);
+        mSteerMotor.setInverted(steerMotorReversed);
+        //motor encoders
+        mDriveEncoder = mDriveMotor.getEncoder();
+        mSteerEncoder = mSteerMotor.getEncoder();
 
-    //so that we can work with meters and radians instead of rotations
-    mDriveEncoder.getPosition();
-    mDriveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
-    mDriveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
-    mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
-    mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
-    
-    //TODO: hardware PID?
-    
-    mSteerPidController = new PIDController(ModuleConstants.kPSteer, ModuleConstants.kISteer, ModuleConstants.kDSteer);
-    mSteerPidController.enableContinuousInput(-Math.PI, Math.PI);
+        //so that we can work with meters and radians instead of rotations
+        mDriveEncoder.getPosition();
+        mDriveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
+        mDriveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
+        mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
+        mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
+        
+        //TODO: hardware PID?
+        mSteerMotor.getPIDController().setP(ModuleConstants.kPSteer);
+        mSteerMotor.getPIDController().setI(ModuleConstants.kISteer);
+        mSteerMotor.getPIDController().setD(ModuleConstants.kDSteer);
+        mSteerMotor.getPIDController().setFF(ModuleConstants.kFFSteer);
+        
 
+        /*
+        mSteerPidController = new PIDController(ModuleConstants.kPSteer, ModuleConstants.kISteer, ModuleConstants.kDSteer);
+        mSteerPidController.enableContinuousInput(-Math.PI, Math.PI);
+            */
     
     }
 
@@ -112,8 +120,8 @@ public class SwerveModule {
         //by taking in the desired state and the current angle the wheels are at, change desired state so that the difference between current and desired angle is minimized
         state = SwerveModuleState.optimize(state, getState().angle);
         //set motors to desired state
-        mDriveMotor.set(state.speedMetersPerSecond / DriveConstants.kMaxSpeedMps);
-        mSteerMotor.set(mSteerPidController.calculate(getSteerPosition(), state.angle.getRadians()));
+        mDriveMotor.getPIDController().setReference(state.angle.getRadians()/DriveConstants.kDriveEncoderGearRatio, ControlType.kVelocity);
+        mSteerMotor.getPIDController().setReference(state.angle.getRadians()/DriveConstants.kSteerEncoderGearRatio, ControlType.kPosition);
         SmartDashboard.putString("Swerve[" + mAbsoluteEncoder.getDeviceID()+ "] state", state.toString());
 
     }
