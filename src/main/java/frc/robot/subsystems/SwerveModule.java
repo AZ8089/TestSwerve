@@ -7,6 +7,7 @@ import com.revrobotics.CANSparkMax.ControlType;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMaxLowLevel.MotorType;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import edu.wpi.first.math.controller.PIDController;
 import edu.wpi.first.wpilibj.RobotController;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -15,23 +16,7 @@ import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class SwerveModule {
-    public static final class ModuleConstants {
-        public static final double kWheelDiameterMeters = 0.1016; //in meters //4 inches
-        public static final double kDriveMotorGearRatio = 1/5.84628; //TODO: measure drive motor gear ratio
-        public static final double kSteerMotorGearRatio = 1/18.0; //TODO: measure steer motor gear ratio
-        public static final double kDriveEncoderRotToMeters = kDriveMotorGearRatio * Math.PI * kWheelDiameterMeters;
-        public static final double kSteerEncoderRot2Rad = kSteerMotorGearRatio *kDriveEncoderRotToMeters;
-        public static final double kDriveEncoderRpm2Mps = kDriveEncoderRotToMeters / 60.0; //rpm = rotations per minute //mps = meters per second
-        public static final double kSteerEncoderRPM2RadPerSec = kSteerEncoderRot2Rad / 60.0;
-        public static final double kCANCoderCounts = 4096.0; // CANCoders have a resolution of 4096 counts per revolution
-        public static final double kAbsoluteEncoderCountsPerMin2Rad = 2.0*Math.PI/kCANCoderCounts; 
 
-        //PID values
-        public static final double kPSteer = 0.5; //TODO: Determine actual kPSteer Value
-        public static final double kISteer = 0.0; //TODO: Determine actual kISteer Value
-        public static final double kDSteer = 0.0; //TODO: Determine actual kDSteer Value
-        public static final double kFFSteer = 0.0; //TODO: Determine actual kFFSteer Value
-    }
     private final CANSparkMax mDriveMotor;
     private final CANSparkMax mSteerMotor;
     
@@ -64,9 +49,9 @@ public class SwerveModule {
         //so that we can work with meters and radians instead of rotations
         mDriveEncoder.getPosition();
         mDriveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
+        mSteerEncoder.setPositionConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
         mDriveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
-        mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
-        mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
+        //mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
         
         //TODO: hardware PID?
         mSteerMotor.getPIDController().setP(ModuleConstants.kPSteer);
@@ -112,7 +97,7 @@ public class SwerveModule {
     }
 
     public void setDesiredState(SwerveModuleState state) {
-        //if statement allows us to ignore commands that don't have substantial driving celocity
+        //if statement allows us to ignore commands that don't have substantial driving velocity
         if(Math.abs(state.speedMetersPerSecond) <0.001) {
             stop();
             return;
@@ -120,8 +105,9 @@ public class SwerveModule {
         //by taking in the desired state and the current angle the wheels are at, change desired state so that the difference between current and desired angle is minimized
         state = SwerveModuleState.optimize(state, getState().angle);
         //set motors to desired state
-        mDriveMotor.getPIDController().setReference(state.angle.getRadians()/DriveConstants.kDriveEncoderGearRatio, ControlType.kVelocity);
-        mSteerMotor.getPIDController().setReference(state.angle.getRadians()/DriveConstants.kSteerEncoderGearRatio, ControlType.kPosition);
+        mDriveMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kVelocity);
+        
+        mSteerMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kPosition);
         SmartDashboard.putString("Swerve[" + mAbsoluteEncoder.getDeviceID()+ "] state", state.toString());
 
     }
