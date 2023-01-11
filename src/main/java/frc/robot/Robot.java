@@ -4,13 +4,18 @@
 
 package frc.robot;
 
+import javax.swing.plaf.nimbus.State;
+
+import com.revrobotics.CANSparkMax.ControlType;
+
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
+import frc.robot.Constants.DriveConstants;
 import frc.robot.subsystems.SwerveModule;
-import frc.robot.subsystems.SwerveSubsystem;
+//import frc.robot.subsystems.SwerveSubsystem;
 
 /**
  * The VM is configured to automatically run this class, and to call the functions corresponding to
@@ -19,12 +24,13 @@ import frc.robot.subsystems.SwerveSubsystem;
  * project.
  */
 public class Robot extends TimedRobot {
-  private Command m_autonomousCommand;
+  /*private Command m_autonomousCommand;
   private SwerveModule mSwerveModule;
   private SwerveSubsystem mSwerveSubsystem;
 
   private RobotContainer m_robotContainer;
-
+  */
+  private SwerveModule mBackRight;
   /**
    * This function is run when the robot is first started up and should be used for any
    * initialization code.
@@ -33,13 +39,21 @@ public class Robot extends TimedRobot {
   public void robotInit() {
     // Instantiate our RobotContainer.  This will perform all our button bindings, and put our
     // autonomous chooser on the dashboard.
-    m_robotContainer = new RobotContainer();
+    //m_robotContainer = new RobotContainer();
    /* mSwerveSubsystem = new SwerveSubsystem();
     SwerveModuleState state = new SwerveModuleState(0.0, new Rotation2d());
 
     SwerveModuleState[] desiredStates = {state, state, state, state};
     mSwerveSubsystem.setModuleStates(desiredStates);
 */
+mBackRight = new SwerveModule(
+      DriveConstants.kBackRightDriveMotorPort,
+      DriveConstants.kBackRightSteerMotorPort,
+      DriveConstants.kBackRightDriveEncoderReversed,
+      DriveConstants.kBackRightSteerEncoderReversed,
+      DriveConstants.kBackRightAbsoluteEncoderPort,
+      DriveConstants.kBackRightAbsoluteEncoderOffsetRad,
+      DriveConstants.kBackRightAbsoluteEncoderReversed);
   }
 
   /**
@@ -68,12 +82,12 @@ public class Robot extends TimedRobot {
   /** This autonomous runs the autonomous command selected by your {@link RobotContainer} class. */
   @Override
   public void autonomousInit() {
-    m_autonomousCommand = m_robotContainer.getAutonomousCommand();
+    /*m_autonomousCommand = m_robotContainer.getAutonomousCommand();
 
     // schedule the autonomous command (example)
     if (m_autonomousCommand != null) {
       m_autonomousCommand.schedule();
-    }
+    }*/
   }
 
   /** This function is called periodically during autonomous. */
@@ -86,9 +100,15 @@ public class Robot extends TimedRobot {
     // teleop starts running. If you want the autonomous to
     // continue until interrupted by another command, remove
     // this line or comment it out.
-    if (m_autonomousCommand != null) {
+    /*if (m_autonomousCommand != null) {
       m_autonomousCommand.cancel();
     }
+    */
+    SwerveModuleState state = new SwerveModuleState(0.5, new Rotation2d(0.0));
+    //mBackRight.setDesiredState(state);
+    mBackRight.getMotor(0).getPIDController().setReference(3, ControlType.kVoltage);
+
+    
   }
 
   /** This function is called periodically during operator control. */

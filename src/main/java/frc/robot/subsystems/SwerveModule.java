@@ -58,6 +58,11 @@ public class SwerveModule {
         mSteerMotor.getPIDController().setI(ModuleConstants.kISteer);
         mSteerMotor.getPIDController().setD(ModuleConstants.kDSteer);
         mSteerMotor.getPIDController().setFF(ModuleConstants.kFFSteer);
+
+        mDriveMotor.getPIDController().setP(ModuleConstants.kPSteer);
+        mDriveMotor.getPIDController().setI(ModuleConstants.kISteer);
+        mDriveMotor.getPIDController().setD(ModuleConstants.kDSteer);
+        mDriveMotor.getPIDController().setFF(ModuleConstants.kFFSteer);
         
 
         /*
@@ -110,6 +115,16 @@ public class SwerveModule {
         mSteerMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kPosition);
         SmartDashboard.putString("Swerve[" + mAbsoluteEncoder.getDeviceID()+ "] state", state.toString());
 
+    }
+
+    public CANSparkMax getMotor(int id){
+        if (id == 0){
+            return mDriveMotor;
+        }
+        else if (id == 1){
+            return mSteerMotor;
+        }
+        return null;        
     }
 
     public void stop() {
