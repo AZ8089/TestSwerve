@@ -35,7 +35,9 @@ public class SwerveModule {
         mAbsoluteEncoderOffsetRad = absoluteEncoderOffset;
         mAbsoluteEncoderReversed = absoluteEncoderReversed;
         mAbsoluteEncoder = new CANCoder(absoluteEncoderId); //default is degrees per second
+
         mAbsoluteEncoder.configFeedbackCoefficient(ModuleConstants.kAbsoluteEncoderCountsPerMin2Rad, "rad", SensorTimeBase.PerSecond); //convert to radians per second
+        
         //motors
         mDriveMotor = new CANSparkMax(driveMotorId, MotorType.kBrushless);
         mSteerMotor = new CANSparkMax(steerMotorId, MotorType.kBrushless);
@@ -45,25 +47,32 @@ public class SwerveModule {
         //motor encoders
         mDriveEncoder = mDriveMotor.getEncoder();
         mSteerEncoder = mSteerMotor.getEncoder();
-
-        //so that we can work with meters and radians instead of rotations
-        mDriveEncoder.getPosition();
-        mDriveEncoder.setPositionConversionFactor(ModuleConstants.kDriveEncoderRotToMeters);
-        mSteerEncoder.setPositionConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
-        mDriveEncoder.setVelocityConversionFactor(ModuleConstants.kDriveEncoderRpm2Mps);
-        //mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
-        
-        //TODO: hardware PID?
+       /*
+        mDriveMotor.getPIDController().setP(0.002*20.0); // if its jerking then kP is probably too big
+        mDriveMotor.getPIDController().setI(0.000005*20.0);
+        mDriveMotor.getPIDController().setD(0.0);
+        mDriveMotor.getPIDController().setFF(0.0);
+*/
         mSteerMotor.getPIDController().setP(ModuleConstants.kPSteer);
         mSteerMotor.getPIDController().setI(ModuleConstants.kISteer);
         mSteerMotor.getPIDController().setD(ModuleConstants.kDSteer);
         mSteerMotor.getPIDController().setFF(ModuleConstants.kFFSteer);
 
-        mDriveMotor.getPIDController().setP(ModuleConstants.kPSteer);
-        mDriveMotor.getPIDController().setI(ModuleConstants.kISteer);
-        mDriveMotor.getPIDController().setD(ModuleConstants.kDSteer);
-        mDriveMotor.getPIDController().setFF(ModuleConstants.kFFSteer);
+        mDriveMotor.getPIDController().setP(ModuleConstants.kPDrive);
+        mDriveMotor.getPIDController().setI(ModuleConstants.kIDrive);
+        mDriveMotor.getPIDController().setD(ModuleConstants.kDDrive);
+        mDriveMotor.getPIDController().setFF(ModuleConstants.kFFDrive);
         
+        //so that we can work with meters and radians instead of rotations
+        mDriveEncoder.setPositionConversionFactor(0.102*Math.PI/8.14);//gets distance traveled meters
+    mDriveEncoder.setVelocityConversionFactor(0.102*Math.PI/(60.0*8.14)); //0.102*Math.PI/(8.14*60)
+   
+        mSteerEncoder.setPositionConversionFactor(ModuleConstants.kSteerEncoderRot2Rad);
+        mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
+        //mSteerEncoder.setVelocityConversionFactor(ModuleConstants.kSteerEncoderRPM2RadPerSec);
+        
+
+       
 
         /*
         mSteerPidController = new PIDController(ModuleConstants.kPSteer, ModuleConstants.kISteer, ModuleConstants.kDSteer);
@@ -81,7 +90,7 @@ public class SwerveModule {
     }
 
     public double getDriveVelocity() {
-        return mDriveEncoder.getVelocity();
+        return mDriveEncoder.getVelocity(); //should be in meters per second
     }
     
     public double getSteerVelocity() {
@@ -89,11 +98,13 @@ public class SwerveModule {
     }
 
     public double getAbsoluteEncoder() {
-        return mAbsoluteEncoder.getPosition()-mAbsoluteEncoderOffsetRad;
+        double angle = mAbsoluteEncoder.getPosition()-mAbsoluteEncoderOffsetRad;   
+        return angle * (mAbsoluteEncoderReversed ? -1.0 : 1.0);
+        
     }
 
     public void resetEncoders() {
-        mDriveEncoder.setPosition(0);
+        mDriveEncoder.setPosition(0.0);
         mSteerEncoder.setPosition(getAbsoluteEncoder());
     }
 
@@ -103,17 +114,17 @@ public class SwerveModule {
 
     public void setDesiredState(SwerveModuleState state) {
         //if statement allows us to ignore commands that don't have substantial driving velocity
-        if(Math.abs(state.speedMetersPerSecond) <0.001) {
+        /*if(Math.abs(state.speedMetersPerSecond) <0.001) {
             stop();
             return;
         }
+        */
         //by taking in the desired state and the current angle the wheels are at, change desired state so that the difference between current and desired angle is minimized
-        state = SwerveModuleState.optimize(state, getState().angle);
+        //state = SwerveModuleState.optimize(state, getState().angle);
         //set motors to desired state
-        mDriveMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kVelocity);
-        
-        mSteerMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kPosition);
-        SmartDashboard.putString("Swerve[" + mAbsoluteEncoder.getDeviceID()+ "] state", state.toString());
+        mDriveMotor.getPIDController().setReference(3.0, ControlType.kVoltage);      
+        //mSteerMotor.getPIDController().setReference(state.angle.getRadians(), ControlType.kPosition);
+        //SmartDashboard.putString("Swerve[" + mAbsoluteEncoder.getDeviceID()+ "] state", state.toString());
 
     }
 

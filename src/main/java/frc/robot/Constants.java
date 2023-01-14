@@ -18,22 +18,29 @@ import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
 public final class Constants {
         public static final class ModuleConstants {
         public static final double kWheelDiameterMeters = 0.1016; //in meters //4 inches
-        public static final double kSteerEncoderGearRatio = (150/7); //(150/7)/2*pi: one revolution of steering motor equals this many radians on motor
+        public static final double kSteerEncoderGearRatio = (150/7); //(150/7): one revolution of wheel equals 21 revolutions on steering motor
         public static final double kDriveEncoderGearRatio = (8.14); //8.14/2*pi: gear ratio*revolution to radians
         //public static final double kDriveMotorGearRatio = 1/5.84628; //TODO: measure drive motor gear ratio
         //public static final double kSteerMotorGearRatio = 1/18.0; //TODO: measure steer motor gear ratio
-        public static final double kDriveEncoderRotToMeters = kDriveEncoderGearRatio * Math.PI * kWheelDiameterMeters;
-        public static final double kSteerEncoderRot2Rad = kSteerEncoderGearRatio / (2*Math.PI);
+        public static final double kDriveEncoderRotToMeters = Math.PI * kWheelDiameterMeters/kDriveEncoderGearRatio;
+        public static final double kSteerEncoderRot2Rad = (2.0*Math.PI)/kSteerEncoderGearRatio;
         public static final double kDriveEncoderRpm2Mps = kDriveEncoderRotToMeters / 60.0; //rpm = rotations per minute //mps = meters per second
         public static final double kSteerEncoderRPM2RadPerSec = kSteerEncoderRot2Rad / 60.0;
         public static final double kCANCoderCounts = 4096.0; // CANCoders have a resolution of 4096 counts per revolution
         public static final double kAbsoluteEncoderCountsPerMin2Rad = 2.0*Math.PI/kCANCoderCounts; 
+        //public static final double kVelocityMps2Voltage = 1.0/19.0; //TODO: Get rid of this if we don't need it
 
         //PID values
         public static final double kPSteer = 0.6; //TODO: Determine actual kPSteer Value
-        public static final double kISteer = 0.005; //TODO: Determine actual kISteer Value
+        public static final double kISteer = 0.0; //TODO: Determine actual kISteer Value
         public static final double kDSteer = 0.0; //TODO: Determine actual kDSteer Value
         public static final double kFFSteer = 0.0; //TODO: Determine actual kFFSteer Value
+
+        public static final double kPDrive = 0.002*20.0; 
+        public static final double kIDrive = 0.000005*20.0; 
+        public static final double kDDrive = 0.0; 
+        public static final double kFFDrive = 0.0;
+
     }
     public static final class DriveConstants {
         //Pigeon ID //TODO: Determine Pigeon port
@@ -54,7 +61,7 @@ public final class Constants {
         
         public static final int kFrontLeftAbsoluteEncoderPort = 11; //TODO: Decide what this ID needs to be
         public static final int kFrontRightAbsoluteEncoderPort = 12; //TODO: Decide what this ID needs to be
-        public static final int kBackLeftDriveAbsoluteEncoderPort = 9; //TODO: Decide what this ID needs to be
+        public static final int kBackLeftAbsoluteEncoderPort = 9; //TODO: Decide what this ID needs to be
         public static final int kBackRightAbsoluteEncoderPort = 10; //TODO: Decide what this ID needs to be
         
         
@@ -68,7 +75,7 @@ public final class Constants {
         public static final boolean kFrontLeftSteerEncoderReversed = false;
         public static final boolean kFrontRightSteerEncoderReversed = false;
         public static final boolean kBackLeftSteerEncoderReversed = false;
-        public static final boolean kBackRightSteerEncoderReversed = false;
+        public static final boolean kBackRightSteerEncoderReversed = true;
 
 
         public static final boolean kFrontLeftAbsoluteEncoderReversed = false;
@@ -78,10 +85,10 @@ public final class Constants {
         
 
         //absolute encoder offsets //TODO: Determine Offsets
-        public static final double kFrontLeftAbsoluteEncoderOffsetRad = 291.182*Math.PI/180.0;
-        public static final double kFrontRightAbsoluteEncoderOffsetRad = 203.730*Math.PI/180.0;
-        public static final double kBackLeftAbsoluteEncoderOffsetRad = 278.350*Math.PI/180.0;
-        public static final double kBackRightAbsoluteEncoderOffsetRad = -310.342*Math.PI/180.0;
+        public static final double kFrontLeftAbsoluteEncoderOffsetRad = -1.144347;
+        public static final double kFrontRightAbsoluteEncoderOffsetRad = 0.325203;
+        public static final double kBackLeftAbsoluteEncoderOffsetRad = -0.645805;
+        public static final double kBackRightAbsoluteEncoderOffsetRad = 0.0;
         
         public static final double kWheelBaseMeters = 0.52613; 
         public static final double kTrackWidthMeters = 0.52695;

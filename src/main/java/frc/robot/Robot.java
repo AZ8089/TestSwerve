@@ -6,14 +6,17 @@ package frc.robot;
 
 import javax.swing.plaf.nimbus.State;
 
+import com.revrobotics.CANSparkMax;
 import com.revrobotics.CANSparkMax.ControlType;
 
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.TimedRobot;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.CommandScheduler;
 import frc.robot.Constants.DriveConstants;
+import frc.robot.Constants.ModuleConstants;
 import frc.robot.subsystems.SwerveModule;
 //import frc.robot.subsystems.SwerveSubsystem;
 
@@ -70,6 +73,10 @@ mBackRight = new SwerveModule(
     // and running subsystem periodic() methods.  This must be called from the robot's periodic
     // block in order for anything in the Command-based framework to work.
     CommandScheduler.getInstance().run();
+
+    SmartDashboard.putNumber("mBackRight Drive Velocity", mBackRight.getDriveVelocity());
+    SmartDashboard.putNumber("mBackRight Steer Position", mBackRight.getSteerPosition());
+    SmartDashboard.putNumber("mBackRight Absolute Position", mBackRight.getAbsoluteEncoder());
   }
 
   /** This function is called once each time the robot enters Disabled mode. */
@@ -104,16 +111,19 @@ mBackRight = new SwerveModule(
       m_autonomousCommand.cancel();
     }
     */
-    SwerveModuleState state = new SwerveModuleState(0.5, new Rotation2d(0.0));
-    //mBackRight.setDesiredState(state);
-    mBackRight.getMotor(0).getPIDController().setReference(3, ControlType.kVoltage);
-
+    mBackRight.resetEncoders();
+    SwerveModuleState state = new SwerveModuleState(1.0, new Rotation2d(0.0));
+    mBackRight.setDesiredState(state);
+    //mBackRight.getMotor(1).getPIDController().setReference(1.0, CANSparkMax.ControlType.kVelocity);
+    //mBackRight.getMotor(1).getPIDController().setReference(, ControlTypve.kPosition);
     
   }
 
   /** This function is called periodically during operator control. */
   @Override
-  public void teleopPeriodic() {}
+  public void teleopPeriodic() {
+    
+  }
 
   @Override
   public void testInit() {
