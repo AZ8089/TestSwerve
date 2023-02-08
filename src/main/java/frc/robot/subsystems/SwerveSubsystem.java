@@ -1,7 +1,10 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
+import edu.wpi.first.math.kinematics.SwerveDriveOdometry;
+import edu.wpi.first.math.kinematics.SwerveModulePosition;
 import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
@@ -35,7 +38,7 @@ public class SwerveSubsystem extends SubsystemBase{
         DriveConstants.kBackLeftSteerMotorPort,
         DriveConstants.kBackLeftDriveEncoderReversed,
         DriveConstants.kBackLeftSteerEncoderReversed,
-        DriveConstants.kBackLeftDriveAbsoluteEncoderPort,
+        DriveConstants.kBackLeftAbsoluteEncoderPort,
         DriveConstants.kBackLeftAbsoluteEncoderOffsetRad,
         DriveConstants.kBackLeftAbsoluteEncoderReversed);
 
@@ -51,6 +54,7 @@ public class SwerveSubsystem extends SubsystemBase{
     //declare and instantiate Inertial Measurement Unit (Pigeon2)
     private Pigeon2 imu = new Pigeon2(DriveConstants.kPigeonPort); 
 
+    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), null);
     //SwerveSubsystem constructor
     public SwerveSubsystem() {
 
@@ -78,6 +82,15 @@ public class SwerveSubsystem extends SubsystemBase{
 
     public Rotation2d getRotation2d() {
         return Rotation2d.fromDegrees(getHeading());
+    }
+
+    public Pose2d getPose() {
+        return odometer.getPoseMeters();
+    }
+
+    //TODO: module positions
+    public void resetOdometry(Pose2d pose) {
+        odometer.resetPosition(getRotation2d(),null, pose);
     }
 
     @Override
