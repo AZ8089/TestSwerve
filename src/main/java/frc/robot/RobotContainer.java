@@ -4,7 +4,13 @@
 
 package frc.robot;
 
+import java.util.List;
+
 import edu.wpi.first.math.controller.PIDController;
+import edu.wpi.first.math.controller.ProfiledPIDController;
+import edu.wpi.first.math.geometry.Pose2d;
+import edu.wpi.first.math.geometry.Rotation2d;
+import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.trajectory.Trajectory;
 import edu.wpi.first.math.trajectory.TrajectoryConfig;
 import edu.wpi.first.math.trajectory.TrajectoryGenerator;
@@ -16,6 +22,9 @@ import frc.robot.Constants.IOConstants;
 import frc.robot.commands.SwerveTeleopCommand;
 import frc.robot.subsystems.SwerveSubsystem;
 import edu.wpi.first.wpilibj2.command.Command;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
+import edu.wpi.first.wpilibj2.command.SequentialCommandGroup;
+import edu.wpi.first.wpilibj2.command.SwerveControllerCommand;
 
 /**
  * This class is where the bulk of the robot should be declared. Since Command-based is a
@@ -60,7 +69,7 @@ public class RobotContainer {
   public Command getAutonomousCommand() {
     // 1. Create trajectory settings
     TrajectoryConfig trajectoryConfig = new TrajectoryConfig(
-      AutoConstants.kMaxSpeedMetersPerSecond,
+      AutoConstants.kMaxSpeedMps,
       AutoConstants.kMaxAccelerationMetersPerSecondSquared)
               .setKinematics(DriveConstants.kDriveKinematics);
 
@@ -92,9 +101,7 @@ SwerveControllerCommand swerveControllerCommand = new SwerveControllerCommand(
       swerveSubsystem);
 
 // 5. Add some init and wrap-up, and return everything
-return new SequentialCommandGroup(
-      new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectory.getInitialPose())),
-      swerveControllerCommand,
-      new InstantCommand(() -> swerveSubsystem.stopModules()));
+return new SequentialCommandGroup(new InstantCommand(() -> swerveSubsystem.resetOdometry(trajectory.getInitialPose())), swerveControllerCommand,  new InstantCommand(() -> swerveSubsystem.stopModules()));
   }
+
 }

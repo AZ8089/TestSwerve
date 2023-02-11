@@ -1,5 +1,8 @@
 package frc.robot.subsystems;
 
+import com.ctre.phoenix.sensors.Pigeon2;
+import com.ctre.phoenix.sensors.Pigeon2Configuration;
+
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.math.kinematics.SwerveDriveKinematics;
@@ -9,9 +12,6 @@ import edu.wpi.first.math.kinematics.SwerveModuleState;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.DriveConstants;
-import edu.wpi.first.wpilibj2.command.SubsystemBase;
-import com.ctre.phoenix.sensors.Pigeon2;
-import com.ctre.phoenix.sensors.Pigeon2Configuration;
 
 public class SwerveSubsystem extends SubsystemBase{
     //declare and instantiate all swerve modules
@@ -54,7 +54,7 @@ public class SwerveSubsystem extends SubsystemBase{
     //declare and instantiate Inertial Measurement Unit (Pigeon2)
     private Pigeon2 imu = new Pigeon2(DriveConstants.kPigeonPort); 
 
-    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), null);
+    private final SwerveDriveOdometry odometer = new SwerveDriveOdometry(DriveConstants.kDriveKinematics, new Rotation2d(0), getModulePositions());
     //SwerveSubsystem constructor
     public SwerveSubsystem() {
 
@@ -90,13 +90,17 @@ public class SwerveSubsystem extends SubsystemBase{
 
     //TODO: module positions
     public void resetOdometry(Pose2d pose) {
-        odometer.resetPosition(getRotation2d(),null, pose);
+        odometer.resetPosition(getRotation2d(),getModulePositions(), pose);
     }
 
     @Override
     public void periodic() {
-        SmartDashboard.putNumber("robot Heading", getHeading());
+        odometer.update(getRotation2d(), getModulePositions());
+        SmartDashboard.putNumber("Robot Heading", getHeading());
+        SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
     }
+
+
 
     public void stopModules() {
         mFrontLeft.stop();
@@ -111,6 +115,17 @@ public class SwerveSubsystem extends SubsystemBase{
         mFrontRight.setDesiredState(desiredStates[1]);
         mBackLeft.setDesiredState(desiredStates[2]);
         mBackRight.setDesiredState(desiredStates[3]);
+    }
+
+    public SwerveModulePosition[] getModulePositions() {
+        SwerveModulePosition[] modulePositions = {
+            new SwerveModulePosition(mFrontLeft.getDrivePosition(), mFrontLeft.getState().angle),
+            new SwerveModulePosition(mFrontRight.getDrivePosition(), mFrontRight.getState().angle),
+            new SwerveModulePosition(mBackLeft.getDrivePosition(), mBackLeft.getState().angle),
+            new SwerveModulePosition(mBackRight.getDrivePosition(), mBackRight.getState().angle)
+        };
+
+        return modulePositions;
     }
 
 }
