@@ -43,8 +43,8 @@ public class RobotContainer {
   public RobotContainer() {
      swerveSubsystem.setDefaultCommand(new SwerveTeleopCommand(
                 swerveSubsystem,
-                () -> controller.getLeftY(),
-                () -> controller.getLeftX(), 
+                () -> controller.getLeftX(), //xSpdFunction is for forward direction 
+                () -> controller.getLeftY(), 
                 () -> controller.getRightX(),
                 () -> !controller.getAButton()));
     // Configure the button bindings
