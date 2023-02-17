@@ -69,17 +69,29 @@ public final class Constants {
         
         
         //whether or not encoders are reversed //TODO: Determine which are reversed
+        /* 
         public static final boolean kFrontLeftDriveEncoderReversed = false;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
+        public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackLeftDriveEncoderReversed = false;
         public static final boolean kBackRightDriveEncoderReversed = false;
-        
+        */
+
+        public static final boolean kFrontLeftDriveEncoderReversed = true;
+        public static final boolean kFrontRightDriveEncoderReversed = false;
+        public static final boolean kBackLeftDriveEncoderReversed = true;
+        public static final boolean kBackRightDriveEncoderReversed = true;
+
+        /* 
+        public static final boolean kFrontLeftSteerEncoderReversed = true;
+        public static final boolean kFrontRightSteerEncoderReversed = true;
+        public static final boolean kBackLeftSteerEncoderReversed = true;
+        public static final boolean kBackRightSteerEncoderReversed = true;
+        */
 
         public static final boolean kFrontLeftSteerEncoderReversed = false;
         public static final boolean kFrontRightSteerEncoderReversed = false;
         public static final boolean kBackLeftSteerEncoderReversed = false;
-        public static final boolean kBackRightSteerEncoderReversed = true;
-
+        public static final boolean kBackRightSteerEncoderReversed = false;
 
         public static final boolean kFrontLeftAbsoluteEncoderReversed = false;
         public static final boolean kFrontRightAbsoluteEncoderReversed = false;
@@ -95,10 +107,10 @@ public final class Constants {
         public static final double kBackRightAbsoluteEncoderOffsetRad = 0.0;
         */
 
-        public static final double kFrontLeftAbsoluteEncoderOffsetRad = 5.551;
-        public static final double kFrontRightAbsoluteEncoderOffsetRad = 5.461;
-        public static final double kBackLeftAbsoluteEncoderOffsetRad = -6.136;
-        public static final double kBackRightAbsoluteEncoderOffsetRad = -4.855;
+        public static final double kFrontLeftAbsoluteEncoderOffsetRad = 5.561;
+        public static final double kFrontRightAbsoluteEncoderOffsetRad = 5.502;
+        public static final double kBackLeftAbsoluteEncoderOffsetRad = 6.113;
+        public static final double kBackRightAbsoluteEncoderOffsetRad = 4.913;
     
         public static final double kWheelBaseMeters = 0.52705; //20.75 inches
         // Distance between right and left wheels
