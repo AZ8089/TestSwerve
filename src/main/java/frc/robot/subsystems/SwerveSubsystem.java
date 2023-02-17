@@ -62,10 +62,13 @@ public class SwerveSubsystem extends SubsystemBase{
             try {
                 Thread.sleep(1000);
                 resetImu();
+                zeroHeading();
             } catch(Exception e) {
             }        
         }).start();
     }
+
+
 
 
     public void resetImu() {
@@ -84,8 +87,12 @@ public class SwerveSubsystem extends SubsystemBase{
         return Math.IEEEremainder(imu.getYaw(), 360); //Pigeon2 is continuous (yaw value will go past 360 degrees). this converts it to between -180 and 180
     }
 
+    public void zeroHeading() {
+        imu.setYaw(0.0);
+    }
+
     public Rotation2d getRotation2d() {
-        return Rotation2d.fromDegrees(getHeading());
+        return Rotation2d.fromDegrees(-getHeading());
     }
 
     public Pose2d getPose() {

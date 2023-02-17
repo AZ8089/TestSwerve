@@ -70,16 +70,14 @@ public final class Constants {
         
         //whether or not encoders are reversed //TODO: Determine which are reversed
         /* 
+        
+        */
+
         public static final boolean kFrontLeftDriveEncoderReversed = false;
         public static final boolean kFrontRightDriveEncoderReversed = true;
         public static final boolean kBackLeftDriveEncoderReversed = false;
         public static final boolean kBackRightDriveEncoderReversed = false;
-        */
-
-        public static final boolean kFrontLeftDriveEncoderReversed = true;
-        public static final boolean kFrontRightDriveEncoderReversed = false;
-        public static final boolean kBackLeftDriveEncoderReversed = true;
-        public static final boolean kBackRightDriveEncoderReversed = true;
+        
 
         /* 
         public static final boolean kFrontLeftSteerEncoderReversed = true;
