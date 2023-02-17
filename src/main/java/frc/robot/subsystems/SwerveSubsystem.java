@@ -69,11 +69,15 @@ public class SwerveSubsystem extends SubsystemBase{
 
 
     public void resetImu() {
+        /* 
         Pigeon2Configuration config = new Pigeon2Configuration();
         config.MountPoseYaw = 0;
         config.MountPosePitch = 0;
-        config.MountPoseRoll = 90;
+        config.MountPoseRoll = 0;
         imu.configAllSettings(config);
+        */
+
+        imu.configMountPose(0.0, 0.0, 0.0);
     }
 
     public double getHeading() {
@@ -98,6 +102,10 @@ public class SwerveSubsystem extends SubsystemBase{
         odometer.update(getRotation2d(), getModulePositions());
         SmartDashboard.putNumber("Robot Heading", getHeading());
         SmartDashboard.putString("Robot Location", getPose().getTranslation().toString());
+        SmartDashboard.putNumber("Yaw", imu.getYaw());
+        SmartDashboard.putNumber("Pitch", imu.getPitch());
+        SmartDashboard.putNumber("Roll", imu.getRoll());
+
     }
 
 
